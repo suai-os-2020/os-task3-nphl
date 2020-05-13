@@ -7,7 +7,7 @@
 HANDLE hThread[THREAD_COUNT];
 DWORD ThreadID;
 HANDLE hMutex;
-HANDLE hIBBorderSemaphore, hFHBorderSemaphore, hSemaphoreK, hSemaphoreH, hSemaphoreI;
+HANDLE hSemaphoreB, hSemaphoreII, hSemaphoreF, hSemaphoreHH, hSemaphoreBFHI, hSemaphoreK, hSemaphoreH, hSemaphoreI;
 
 unsigned int lab3_thread_graph_id() {
     return 18;
@@ -21,19 +21,22 @@ const char *lab3_sequential_threads() {
     return "khi";
 }
 
-DWORD WINAPI thread_a(LPVOID lpParam);
-DWORD WINAPI thread_b(LPVOID lpParam);
-DWORD WINAPI thread_c(LPVOID lpParam);
-DWORD WINAPI thread_d(LPVOID lpParam);
-DWORD WINAPI thread_e(LPVOID lpParam);
-DWORD WINAPI thread_f(LPVOID lpParam);
-DWORD WINAPI thread_g(LPVOID lpParam);
-DWORD WINAPI thread_h(LPVOID lpParam);
-DWORD WINAPI thread_i(LPVOID lpParam);
-DWORD WINAPI thread_k(LPVOID lpParam);
-DWORD WINAPI thread_m(LPVOID lpParam);
+DWORD WINAPI thread_a(LPVOID lpParam); // 0
+DWORD WINAPI thread_b(LPVOID lpParam); // 1
+DWORD WINAPI thread_c(LPVOID lpParam); // 2
+DWORD WINAPI thread_d(LPVOID lpParam); // 3
+DWORD WINAPI thread_e(LPVOID lpParam); // 4
+DWORD WINAPI thread_f(LPVOID lpParam); // 5
+DWORD WINAPI thread_g(LPVOID lpParam); // 6
+DWORD WINAPI thread_h(LPVOID lpParam); // 7
+DWORD WINAPI thread_i(LPVOID lpParam); // 8
+DWORD WINAPI thread_k(LPVOID lpParam); // 9
+DWORD WINAPI thread_m(LPVOID lpParam); // 10
 
 DWORD WINAPI thread_a(LPVOID lpParam) {
+    // lpParam is not used
+    UNREFERENCED_PARAMETER(lpParam);
+
     // perform computations
     for (int i = 0; i < 3; ++i) {
         WaitForSingleObject(hMutex, INFINITE);
@@ -46,34 +49,8 @@ DWORD WINAPI thread_a(LPVOID lpParam) {
 }
 
 DWORD WINAPI thread_b(LPVOID lpParam) {
-    // perform computations
-    for (int i = 0; i < 3; ++i) {
-        WaitForSingleObject(hMutex, INFINITE);
-        std::cout << "b" << std::flush;
-        ReleaseMutex(hMutex);
-        computation();
-    }
-
-    // wait for thread A to finish
-    WaitForSingleObject(hThread[0], INFINITE);
-    // close thread A
-    CloseHandle(hThread[0]);
-
-    // start thread C
-    hThread[2] = CreateThread(NULL, 0, thread_c, NULL, 0, &ThreadID);
-    if (hThread[2] == NULL) {
-        std::cerr << "Can't create thread C. Error: " << GetLastError() << std::endl;
-        return 1;
-    }
-
-    // start thread D
-    hThread[3] = CreateThread(NULL, 0, thread_d, NULL, 0, &ThreadID);
-    if (hThread[3] == NULL) {
-        std::cerr << "Can't create thread D. Error: " << GetLastError() << std::endl;
-        return 1;
-    }
-
-    ReleaseSemaphore(hIBBorderSemaphore, 1, NULL);
+    // lpParam is not used
+    UNREFERENCED_PARAMETER(lpParam);
 
     // perform computations
     for (int i = 0; i < 3; ++i) {
@@ -83,12 +60,9 @@ DWORD WINAPI thread_b(LPVOID lpParam) {
         computation();
     }
 
-    // wait for thread C to finish
-    WaitForSingleObject(hThread[2], INFINITE);
-    // close thread C
-    CloseHandle(hThread[2]);
-
-    ReleaseSemaphore(hIBBorderSemaphore, 1, NULL);
+    ReleaseSemaphore(hSemaphoreII, 1, NULL);
+    // wait for thread I
+    WaitForSingleObject(hSemaphoreB, INFINITE);
 
     // perform computations
     for (int i = 0; i < 3; ++i) {
@@ -98,7 +72,9 @@ DWORD WINAPI thread_b(LPVOID lpParam) {
         computation();
     }
 
-    WaitForSingleObject(hIBBorderSemaphore, INFINITE);
+    ReleaseSemaphore(hSemaphoreII, 1, NULL);
+    // wait for thread I
+    WaitForSingleObject(hSemaphoreB, INFINITE);
 
     // perform computations
     for (int i = 0; i < 3; ++i) {
@@ -108,12 +84,26 @@ DWORD WINAPI thread_b(LPVOID lpParam) {
         computation();
     }
 
-    ReleaseSemaphore(hIBBorderSemaphore, 1, NULL);
+    // release semaphore for thread I
+    ReleaseSemaphore(hSemaphoreBFHI, 1, NULL);
+    // wait for thread I
+    WaitForSingleObject(hSemaphoreB, INFINITE);
+
+    // perform computations
+    for (int i = 0; i < 3; ++i) {
+        WaitForSingleObject(hMutex, INFINITE);
+        std::cout << "b" << std::flush;
+        ReleaseMutex(hMutex);
+        computation();
+    }
 
     return 0;
 }
 
 DWORD WINAPI thread_c(LPVOID lpParam) {
+    // lpParam is not used
+    UNREFERENCED_PARAMETER(lpParam);
+
     // perform computations
     for (int i = 0; i < 3; ++i) {
         WaitForSingleObject(hMutex, INFINITE);
@@ -131,6 +121,9 @@ DWORD WINAPI thread_c(LPVOID lpParam) {
 }
 
 DWORD WINAPI thread_d(LPVOID lpParam) {
+    // lpParam is not used
+    UNREFERENCED_PARAMETER(lpParam);
+
     // perform computations
     for (int i = 0; i < 3; ++i) {
         WaitForSingleObject(hMutex, INFINITE);
@@ -143,6 +136,9 @@ DWORD WINAPI thread_d(LPVOID lpParam) {
 }
 
 DWORD WINAPI thread_e(LPVOID lpParam) {
+    // lpParam is not used
+    UNREFERENCED_PARAMETER(lpParam);
+
     // perform computations
     for (int i = 0; i < 3; ++i) {
         WaitForSingleObject(hMutex, INFINITE);
@@ -155,27 +151,8 @@ DWORD WINAPI thread_e(LPVOID lpParam) {
 }
 
 DWORD WINAPI thread_f(LPVOID lpParam) {
-    // perform computations
-    for (int i = 0; i < 3; ++i) {
-        WaitForSingleObject(hMutex, INFINITE);
-        std::cout << "f" << std::flush;
-        ReleaseMutex(hMutex);
-        computation();
-    }
-
-    // wait for thread E to finish
-    WaitForSingleObject(hThread[4], INFINITE);
-    // close thread E
-    CloseHandle(hThread[4]);
-
-    // start thread G
-    hThread[7] = CreateThread(NULL, 0, thread_g, NULL, 0, &ThreadID);
-    if (hThread[7] == NULL) {
-        std::cerr << "Can't create thread G. Error: " << GetLastError() << std::endl;
-        return 1;
-    }
-
-    ReleaseSemaphore(hFHBorderSemaphore, 1, NULL);
+    // lpParam is not used
+    UNREFERENCED_PARAMETER(lpParam);
 
     // perform computations
     for (int i = 0; i < 3; ++i) {
@@ -185,15 +162,24 @@ DWORD WINAPI thread_f(LPVOID lpParam) {
         computation();
     }
 
-    // wait for thread G to finish
-    WaitForSingleObject(hThread[6], INFINITE);
-    // close thread G
-    CloseHandle(hThread[6]);
+    ReleaseSemaphore(hSemaphoreBFHI, 1, NULL);
+    WaitForSingleObject(hSemaphoreF, INFINITE);
+
+    // perform computations
+    for (int i = 0; i < 3; ++i) {
+        WaitForSingleObject(hMutex, INFINITE);
+        std::cout << "f" << std::flush;
+        ReleaseMutex(hMutex);
+        computation();
+    }
 
     return 0;
 }
 
 DWORD WINAPI thread_g(LPVOID lpParam) {
+    // lpParam is not used
+    UNREFERENCED_PARAMETER(lpParam);
+
     // perform computations
     for (int i = 0; i < 3; ++i) {
         WaitForSingleObject(hMutex, INFINITE);
@@ -206,15 +192,8 @@ DWORD WINAPI thread_g(LPVOID lpParam) {
 }
 
 DWORD WINAPI thread_h(LPVOID lpParam) {
-    // perform computations
-    for (int i = 0; i < 3; ++i) {
-        WaitForSingleObject(hMutex, INFINITE);
-        std::cout << "h" << std::flush;
-        ReleaseMutex(hMutex);
-        computation();
-    }
-
-    WaitForSingleObject(hFHBorderSemaphore, INFINITE);
+    // lpParam is not used
+    UNREFERENCED_PARAMETER(lpParam);
 
     // perform computations
     for (int i = 0; i < 3; ++i) {
@@ -224,17 +203,19 @@ DWORD WINAPI thread_h(LPVOID lpParam) {
         computation();
     }
 
-    // wait for thread F to finish
-    WaitForSingleObject(hThread[5], INFINITE);
-    // close thread F
-    CloseHandle(hThread[5]);
+    ReleaseSemaphore(hSemaphoreBFHI, 1, NULL);
+    WaitForSingleObject(hSemaphoreHH, INFINITE);
 
-    // wait for thread B to finish
-    WaitForSingleObject(hThread[1], INFINITE);
-    // close thread B
-    CloseHandle(hThread[1]);
+    // perform computations
+    for (int i = 0; i < 3; ++i) {
+        WaitForSingleObject(hMutex, INFINITE);
+        std::cout << "h" << std::flush;
+        ReleaseMutex(hMutex);
+        computation();
+    }
 
-    ReleaseSemaphore(hFHBorderSemaphore, 1, NULL);
+    ReleaseSemaphore(hSemaphoreII, 1, NULL);
+    WaitForSingleObject(hSemaphoreHH, INFINITE);
 
     // perform computations
     for (int i = 0; i < 3; ++i) {
@@ -250,15 +231,8 @@ DWORD WINAPI thread_h(LPVOID lpParam) {
 }
 
 DWORD WINAPI thread_i(LPVOID lpParam) {
-    // perform computations
-    for (int i = 0; i < 3; ++i) {
-        WaitForSingleObject(hMutex, INFINITE);
-        std::cout << "i" << std::flush;
-        ReleaseMutex(hMutex);
-        computation();
-    }
-
-    WaitForSingleObject(hIBBorderSemaphore, INFINITE);
+    // lpParam is not used
+    UNREFERENCED_PARAMETER(lpParam);
 
     // perform computations
     for (int i = 0; i < 3; ++i) {
@@ -268,7 +242,45 @@ DWORD WINAPI thread_i(LPVOID lpParam) {
         computation();
     }
 
-    WaitForSingleObject(hIBBorderSemaphore, INFINITE);
+    // wait for thread A to finish
+    WaitForSingleObject(hThread[0], INFINITE);
+    // close thread A
+    CloseHandle(hThread[0]);
+
+    // wait 1st step of B
+    WaitForSingleObject(hSemaphoreII, INFINITE);
+    ReleaseSemaphore(hSemaphoreB, 1, NULL);
+
+    // start thread C
+    hThread[2] = CreateThread(NULL, 0, thread_c, NULL, 0, &ThreadID);
+    if (hThread[2] == NULL) {
+        std::cerr << "Can't create thread C. Error: " << GetLastError() << std::endl;
+        return 1;
+    }
+
+    // start thread D
+    hThread[3] = CreateThread(NULL, 0, thread_d, NULL, 0, &ThreadID);
+    if (hThread[3] == NULL) {
+        std::cerr << "Can't create thread D. Error: " << GetLastError() << std::endl;
+        return 1;
+    }
+
+    // perform computations
+    for (int i = 0; i < 3; ++i) {
+        WaitForSingleObject(hMutex, INFINITE);
+        std::cout << "i" << std::flush;
+        ReleaseMutex(hMutex);
+        computation();
+    }
+
+    // wait for thread C to finish
+    WaitForSingleObject(hThread[2], INFINITE);
+    // close thread C
+    CloseHandle(hThread[2]);
+
+    // wait for thread B
+    WaitForSingleObject(hSemaphoreII, INFINITE);
+    ReleaseSemaphore(hSemaphoreB, 1, NULL);
 
     // start thread E
     hThread[4] = CreateThread(NULL, 0, thread_e, NULL, 0, &ThreadID);
@@ -299,7 +311,26 @@ DWORD WINAPI thread_i(LPVOID lpParam) {
         computation();
     }
 
-    ReleaseSemaphore(hIBBorderSemaphore, 1, NULL);
+    // wait for thread E to finish
+    WaitForSingleObject(hThread[4], INFINITE);
+    // close thread E
+    CloseHandle(hThread[4]);
+
+    // wait for B, F and H threads
+    WaitForSingleObject(hSemaphoreBFHI, INFINITE);
+    WaitForSingleObject(hSemaphoreBFHI, INFINITE);
+    WaitForSingleObject(hSemaphoreBFHI, INFINITE);
+
+    ReleaseSemaphore(hSemaphoreB, 1, NULL);
+    ReleaseSemaphore(hSemaphoreF, 1, NULL);
+    ReleaseSemaphore(hSemaphoreHH, 1, NULL);
+
+    // start thread G
+    hThread[6] = CreateThread(NULL, 0, thread_g, NULL, 0, &ThreadID);
+    if (hThread[6] == NULL) {
+        std::cerr << "Can't create thread G. Error: " << GetLastError() << std::endl;
+        return 1;
+    }
 
     // perform computations
     for (int i = 0; i < 3; ++i) {
@@ -309,8 +340,23 @@ DWORD WINAPI thread_i(LPVOID lpParam) {
         computation();
     }
 
-    WaitForSingleObject(hIBBorderSemaphore, INFINITE);
-    WaitForSingleObject(hFHBorderSemaphore, INFINITE);
+    // wait for thread B to finish
+    WaitForSingleObject(hThread[1], INFINITE);
+    // close thread B
+    CloseHandle(hThread[1]);
+
+    // wait for thread F to finish
+    WaitForSingleObject(hThread[5], INFINITE);
+    // close thread F
+    CloseHandle(hThread[5]);
+
+    // wait for thread G to finish
+    WaitForSingleObject(hThread[6], INFINITE);
+    // close thread G
+    CloseHandle(hThread[6]);
+
+    WaitForSingleObject(hSemaphoreII, INFINITE);
+    ReleaseSemaphore(hSemaphoreHH, 1, NULL);
 
     // start thread K
     hThread[9] = CreateThread(NULL, 0, thread_k, NULL, 0, &ThreadID);
@@ -354,6 +400,9 @@ DWORD WINAPI thread_i(LPVOID lpParam) {
 }
 
 DWORD WINAPI thread_k(LPVOID lpParam) {
+    // lpParam is not used
+    UNREFERENCED_PARAMETER(lpParam);
+
     // perform computations
     for (int i = 0; i < 3; ++i) {
         WaitForSingleObject(hSemaphoreK, INFINITE);
@@ -367,6 +416,9 @@ DWORD WINAPI thread_k(LPVOID lpParam) {
     return 0;
 }
 DWORD WINAPI thread_m(LPVOID lpParam) {
+    // lpParam is not used
+    UNREFERENCED_PARAMETER(lpParam);
+
     // perform computations
     for (int i = 0; i < 3; ++i) {
         WaitForSingleObject(hMutex, INFINITE);
@@ -386,16 +438,30 @@ int lab3_init() {
         return 1;
     }
 
-    // initialize I-B threads border semaphore
-    hIBBorderSemaphore = CreateSemaphore(NULL, 0, 1, NULL);
-    if (hIBBorderSemaphore == NULL) {
-        std::cerr << "I and B Threads Border Semaphore init failed" << std::endl;
+    // initialize threads border helper semaphore
+    hSemaphoreB = CreateSemaphore(NULL, 0, 1, NULL);
+    if (hSemaphoreB == NULL) {
+        std::cerr << "Semaphore B init failed" << std::endl;
         return 1;
     }
-    // initialize F-H threads border semaphore
-    hFHBorderSemaphore = CreateSemaphore(NULL, 0, 1, NULL);
-    if (hFHBorderSemaphore == NULL) {
-        std::cerr << "F and H Threads Border Semaphore init failed" << std::endl;
+    hSemaphoreII = CreateSemaphore(NULL, 0, 1, NULL);
+    if (hSemaphoreII == NULL) {
+        std::cerr << "Semaphore II init failed" << std::endl;
+        return 1;
+    }
+    hSemaphoreF = CreateSemaphore(NULL, 0, 1, NULL);
+    if (hSemaphoreF == NULL) {
+        std::cerr << "Semaphore F init failed" << std::endl;
+        return 1;
+    }
+    hSemaphoreHH = CreateSemaphore(NULL, 0, 1, NULL);
+    if (hSemaphoreHH == NULL) {
+        std::cerr << "Semaphore HH init failed" << std::endl;
+        return 1;
+    }
+    hSemaphoreBFHI = CreateSemaphore(NULL, 0, 3, NULL);
+    if (hSemaphoreBFHI == NULL) {
+        std::cerr << "Semaphore BFHI init failed" << std::endl;
         return 1;
     }
     // initialize semaphore K
@@ -445,8 +511,11 @@ int lab3_init() {
     // close mutex
     CloseHandle(hMutex);
     // close semaphores
-    CloseHandle(hIBBorderSemaphore);
-    CloseHandle(hFHBorderSemaphore);
+    CloseHandle(hSemaphoreB);
+    CloseHandle(hSemaphoreII);
+    CloseHandle(hSemaphoreF);
+    CloseHandle(hSemaphoreHH);
+    CloseHandle(hSemaphoreBFHI);
     CloseHandle(hSemaphoreK);
     CloseHandle(hSemaphoreH);
     CloseHandle(hSemaphoreI);
